@@ -1,0 +1,6 @@
+{
+    "eingang_ordner": "C:\\Pfad\\zu\\deinem\\OneDrive\\Automatisierung\\Eingang",
+    "archiv_ordner": "C:\\Pfad\\zu\\deinem\\OneDrive\\Automatisierung\\Abgeschlossen",
+    "fehler_ordner": "C:\\Pfad\\zu\\deinem\\OneDrive\\Automatisierung\\Fehler",
+    "excel_pfad": "C:\\Pfad\\zu\\deinem\\OneDrive\\Automatisierung\\EingangRPA.xlsx"
+}
