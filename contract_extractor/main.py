@@ -188,23 +188,48 @@ def analyze_text_with_ollama(text: str, schema: Dict[str, str]) -> Dict[str, Any
         raise e
 
 def save_to_excel(data: Dict[str, Any], excel_path: str):
-    """Speichert die extrahierten Daten in der Excel-Datei."""
-    df_new = pd.DataFrame([data])
+    """Speichert die extrahierten Daten in der Excel-Datei mit openpyxl, um bestehende Formeln zu erhalten."""
+    import openpyxl
     
     if os.path.exists(excel_path):
         try:
-            df_existing = pd.read_excel(excel_path)
-            # Nutze concat, um neue Zeile anzuhängen
-            df_combined = pd.concat([df_existing, df_new], ignore_index=True)
-            df_combined.to_excel(excel_path, index=False)
-            logger.info(f"Daten erfolgreich in {excel_path} angehängt.")
+            # data_only=False sorgt dafür, dass bestehende Formeln (wie Hyperlinks) beim Speichern NICHT gelöscht werden!
+            wb = openpyxl.load_workbook(excel_path, data_only=False)
+            ws = wb.active
+            
+            # Spaltenüberschriften aus der ersten Zeile auslesen
+            headers = [cell.value for cell in ws[1]]
+            
+            # Zeile entsprechend der Spaltenreihenfolge aufbauen
+            new_row = []
+            for col_name in headers:
+                new_row.append(data.get(col_name, None))
+                
+            ws.append(new_row)
+            wb.save(excel_path)
+            wb.close()
+            logger.info(f"Daten erfolgreich in {excel_path} angehängt (Formeln bleiben erhalten).")
         except Exception as e:
             logger.error(f"Fehler beim Aktualisieren der Excel-Datei: {e}")
             raise e
     else:
         try:
             os.makedirs(os.path.dirname(os.path.abspath(excel_path)), exist_ok=True)
-            df_new.to_excel(excel_path, index=False)
+            wb = openpyxl.Workbook()
+            ws = wb.active
+            
+            # Alle Spaltennamen (inkl. Quelldatei) festlegen
+            headers = list(data.keys())
+            if "Quelldatei" not in headers:
+                headers.append("Quelldatei")
+                
+            ws.append(headers)
+            
+            new_row = [data.get(col_name, None) for col_name in headers]
+            ws.append(new_row)
+            
+            wb.save(excel_path)
+            wb.close()
             logger.info(f"Neue Excel-Datei {excel_path} erstellt.")
         except Exception as e:
             logger.error(f"Fehler beim Erstellen der Excel-Datei: {e}")
