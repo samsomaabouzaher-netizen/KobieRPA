@@ -1,0 +1,105 @@
+▪
+▪
+▪
+▪
+▪
+▪
+▪
+▪
+▪
+▪
+▪
+▪
+▪
+▪
+▪
+▪
+▪
+▪
+▪
+▪
+
+
+--- AUSGEFÜLLTE FORMULARFELDER ---
+Geburtstag: 28/06/2020
+DatumderAufnahmevoraussichtlic: 01/09/2026
+Eltern1NachnameVornamen: Barisch, Katharina
+Eltern2NachnameVornamen: Barisch, Tim
+Eltern1Anschrift1: Steppachstraße 6 | 90542 Eckental
+Eltern2Anschrift1: Steppachstraße 6 | 90542 Eckental
+KindBezeichnung: Barisch, Moritz, 28.06.2020, ASB-Kinderhort myKinderhort
+KitaName: ASB-Kinderhort myKinderhort
+KindNachnameVornamen: Barisch, Moritz
+OrtdenDatum: Eckental, den 12.06.2026
+Einfügebereich60: X
+Montagvon: 11:30
+Dienstagvon: 11:30
+Mittwochvon: 11:30
+Donnerstagvon: 12:30
+Freitagvon: 12:30
+Montagbis: 15:00
+Dienstagbis: 15:00
+Mittwochbis: 15:00
+Donnertagbis: 15:00
+Freitagbis: 15:00
+Stunden_Montag: 3.5
+Stunden_Dienstag: 3.5
+Stunden_Mittwoch: 3.5
+Stunden_Donnerstag: 2.5
+Stunden_Freitag: 2.5
+Stunden_Woche gesamt: 15.5
+Einfügebereich72: X
+Einfügebereich75: X
+Einfügebereich76: X
+Einfügebereich80: 11
+Einfügebereich83: 1
+Einfügebereich87: 12
+Einfügebereich88: 115,88
+Einfügebereich91: 115,88
+Einfügebereich95: 226,30
+Einfügebereich99: 115,88
+Einfügebereich103: 12
+Gebuhrgultigab: 01/09/2026
+GebuhrHort34: 113.00
+GebuhrHort45: 124.50
+GebuhrHort56: 136.00
+GebuhrHort67: 147.50
+GebuhrHort78: 159.00
+GebuhrHort89: 170.50
+VerpflHort34: 109.50
+VerpflHort45: 113.50
+VerpflHort56: 117.00
+VerpflHort67: 120.50
+VerpflHort78: 124.00
+VerpflHort89: 127.50
+Geburtsort: Nürnberg 
+Geschlecht: männlich
+DasKindlebthauptsachlich: bei beiden Eltern
+Einfügebereich171: X
+KindAnschrift: Steppachstraße 6 | 90542 Eckental
+Staatsangehörigkeit: deutsch
+Eltern2istdeutschsprachigerHer*|*deutschsprachige Herkunft: X
+Eltern1istdeutschsprachigerHer*|*deutschsprachige Herkunft: X
+Eltern1istzurZeit*|*berufstätig: X
+Eltern2istzurZeit*|*berufstätig: X
+Eltern1Geburtsdatum: 19/01/1990
+Eltern2Geburtsdatum: 23/04/1985
+VerhaltniszumKind: Mutter
+VerhaltniszumKind1: Vater
+Eltern1Handynummer: 015119022627
+Eltern2Handynummer: 01702218102
+Eltern1TelefonzBGeschaftlich: 0911 28746594
+Eltern1eMail: Katharina.frisch90@web.de
+Eltern2eMail: Barisch.tim@web.de
+Einfügebereich225: X
+Kita: Eckental: ASB-Kinderhort myKinderhort
+KitaAnsprechpartner: Leck, Lisa-Marie | 09126 284364 | mykinderhort@asb-wunderkinder.de
+Einfügebereich240: X
+Kontoinhaber: Katharina Barisch
+FurdieAbrechnungbittedieseBank: DE26500105175428612681
+Hort_gesamt_34: 222.5
+Hort_gesamt_45: 238.0
+Hort_gesamt_56: 253
+Hort_gesamt_67: 268.0
+Hort_gesamt_78: 283
+Hort_gesamt_89: 298.0

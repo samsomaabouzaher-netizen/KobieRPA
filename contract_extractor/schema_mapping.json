@@ -1,5 +1,5 @@
 {
-    "ma.Name": "Name der Kita / Einrichtung / Mandant",
+    "ma.Name": "Name der Kindertagesstätte / Einrichtung / Kita (steht auf der ersten Seite meistens unter 'als Träger der Kindertagesstätte', z.B. 'ASB-Kinderhaus Heuchling' oder 'ASB-Kinderhort myKinderhort'). Extrahiere nur den reinen Namen der Einrichtung.",
     "ki.Aufndat": "Aufnahmedatum / Vertragsbeginn des Kindes",
     "ki.Austrdat": "Austrittsdatum / Vertragsende des Kindes",
     "ki.Name": "Nachname des Kindes (wenn im PDF als 'Nachname, Vorname' angegeben, nimm nur den Nachnamen vor dem Komma, z.B. 'Banner')",
@@ -54,5 +54,14 @@
     "bb.DoV1": "Buchungszeit am DONNERSTAG ab/von (Uhrzeit)",
     "bb.DoB1": "Buchungszeit am DONNERSTAG bis (Uhrzeit)",
     "bb.FrV1": "Buchungszeit am FREITAG ab/von (Uhrzeit)",
-    "bb.FrB1": "Buchungszeit am FREITAG bis (Uhrzeit)"
+    "bb.FrB1": "Buchungszeit am FREITAG bis (Uhrzeit)",
+    "Früherkennungsuntersuchung": "Früherkennungsuntersuchung (Setze ein 'X', wenn als Nachweis altersgerechte U-Untersuchungen oder andere ärztliche Bestätigung erbracht wurde, sonst null)",
+    "Impfberatung": "Impfberatung (Setze ein 'X', wenn als Nachweis eine kürzlich erfolgte U-Untersuchung, erfolgte Impfungen gem. STIKO oder eine andere ärztliche Beratung erbracht wurde, sonst null)",
+    "Nachweis Masern 1 ": "Nachweis Masern 1 (Setze ein 'X', wenn dieser Nachweis erbracht wurde, sonst null)",
+    "Nachweis Masern 2": "Nachweis Masern 2 (Setze ein 'X', wenn dieser Nachweis erbracht wurde, sonst null)",
+    "Nachweis Masern  nicht erbracht": "Nachweis Masern nicht erbracht (Setze ein 'X', wenn dieser Fall eintritt bzw. angekreuzt ist, sonst null)",
+    "Gemeinde": "Gemeinde des Kindes (Dieser Wert entspricht exakt dem Wohnort des Kindes aus ki.Wohnort)",
+    "Zahlungspflichtiger": "Zahlungspflichtiger (Name, Vornamen) für den Einzug der Gebühren. Falls 'Zahlungspflichtiger (s.o.)' angekreuzt ist, entspricht dies dem Zahlungspflichtigen.",
+    "Kreditinstitut": "Name der Bank / des Kreditinstituts",
+    "IBAN": "IBAN (Internationale Bankkontonummer)"
 }

@@ -5,6 +5,7 @@ import shutil
 import logging
 from pathlib import Path
 from typing import Dict, Any
+import base64
 
 import pypdf
 import pdfplumber
@@ -172,11 +173,18 @@ def analyze_text_with_ollama(text: str, schema: Dict[str, str]) -> Dict[str, Any
         response.raise_for_status()
         
         full_response = ""
-        # Lese die Antwort Stück für Stück mit, damit das Netzwerk nicht denkt, die Verbindung sei tot
+        # Lese die Antwort Stück für Stück mit und zeige einen Ladebalken/Fortschritt an
+        import sys
+        print("KI denkt nach und liest den Vertrag ", end="", flush=True)
+        chunk_count = 0
         for line in response.iter_lines():
             if line:
                 chunk = json.loads(line)
                 full_response += chunk.get("response", "")
+                chunk_count += 1
+                if chunk_count % 10 == 0:
+                    print(".", end="", flush=True)
+        print(" Fertig!")
                 
         extracted_data = json.loads(full_response)
         return extracted_data
@@ -206,6 +214,30 @@ def save_to_excel(data: Dict[str, Any], excel_path: str):
                 new_row.append(data.get(col_name, None))
                 
             ws.append(new_row)
+            
+            # Hyperlink-Eigenschaft direkt in openpyxl setzen
+            current_row = ws.max_row
+            from openpyxl.styles import PatternFill
+            red_fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
+            
+            for col_idx, col_name in enumerate(headers, 1):
+                cell = ws.cell(row=current_row, column=col_idx)
+                
+                # Check for empty critical fields to color them red
+                critical_fields = ["Früherkennungsuntersuchung", "Impfberatung", "Nachweis Masern 1 ", "Nachweis Masern 2", "Nachweis Masern  nicht erbracht"]
+                if col_name in critical_fields:
+                    val = cell.value
+                    if val is None or str(val).strip() == "" or str(val).lower() == "null":
+                        cell.fill = red_fill
+                        
+                if col_name == "Quelldatei":
+                    cell = ws.cell(row=current_row, column=col_idx)
+                    val = cell.value
+                    if val:
+                        cell.value = os.path.basename(str(val))
+                        cell.hyperlink = str(val)
+                        cell.style = "Hyperlink"
+            
             wb.save(excel_path)
             wb.close()
             logger.info(f"Daten erfolgreich in {excel_path} angehängt (Formeln bleiben erhalten).")
@@ -227,6 +259,17 @@ def save_to_excel(data: Dict[str, Any], excel_path: str):
             
             new_row = [data.get(col_name, None) for col_name in headers]
             ws.append(new_row)
+            
+            # Hyperlink-Eigenschaft direkt in openpyxl setzen
+            current_row = ws.max_row
+            for col_idx, col_name in enumerate(headers, 1):
+                if col_name == "Quelldatei":
+                    cell = ws.cell(row=current_row, column=col_idx)
+                    val = cell.value
+                    if val:
+                        cell.value = os.path.basename(str(val))
+                        cell.hyperlink = str(val)
+                        cell.style = "Hyperlink"
             
             wb.save(excel_path)
             wb.close()
@@ -272,16 +315,33 @@ def process_pdfs(config: Dict[str, str], current_schema: Dict[str, str]):
     
     pdf_files = [os.path.join(eingang, f) for f in os.listdir(eingang) if f.lower().endswith('.pdf')]
     
+    total_files = len(pdf_files)
     if not pdf_files:
         return
         
-    for pdf_path in pdf_files:
+    for idx, pdf_path in enumerate(pdf_files, start=1):
+        filename = os.path.basename(pdf_path)
         logger.info(f"---")
-        logger.info(f"Starte Verarbeitung von: {pdf_path}")
+        logger.info(f"Starte Verarbeitung von Datei {idx} von {total_files}: {filename}")
         try:
             # 1. Text extrahieren
             text = extract_text_from_pdf(pdf_path)
             
+            # --- Checkboxen technisch direkt aus PDF auslesen ---
+            reader = pypdf.PdfReader(pdf_path)
+            fields = reader.get_fields()
+            pdf_checkboxes = {}
+            if fields:
+                for k, v in fields.items():
+                    decoded_name = k
+                    try:
+                        padded_name = k + "=" * ((4 - len(k) % 4) % 4)
+                        decoded_bytes = base64.b64decode(padded_name.encode('utf-8'), validate=True)
+                        decoded_name = decoded_bytes.decode('utf-8', errors='ignore')
+                    except Exception:
+                        pass
+                    pdf_checkboxes[decoded_name] = v.get('/V', '')
+                    
             if not text.strip():
                 raise ValueError("PDF enthält keinen extrahierbaren Text.")
                 
@@ -289,6 +349,36 @@ def process_pdfs(config: Dict[str, str], current_schema: Dict[str, str]):
             logger.info("Sende Text an Ollama zur Extraktion...")
             extracted_data = analyze_text_with_ollama(text, current_schema)
             logger.info(f"Erfolgreich extrahiert: {list(extracted_data.keys())}")
+            
+            # --- Manuelles Einsetzen der Checkboxen aus der PDF (bypassed Ollama) ---
+            # Früherkennungsuntersuchung:
+            # 171 = U-Heft, 172 = andere Bestätigung
+            if "Früherkennungsuntersuchung" in current_schema:
+                if pdf_checkboxes.get('Einfügebereich171') == 'X' or pdf_checkboxes.get('Einfügebereich171') == '/Yes' or \
+                   pdf_checkboxes.get('Einfügebereich172') == 'X' or pdf_checkboxes.get('Einfügebereich172') == '/Yes':
+                    extracted_data["Früherkennungsuntersuchung"] = "X"
+                elif pdf_checkboxes.get('Einfügebereich173') == 'X' or pdf_checkboxes.get('Einfügebereich173') == '/Yes':
+                    extracted_data["Früherkennungsuntersuchung"] = ""
+            
+            # Impfberatung:
+            # 176 = U-Heft, 175 = STIKO, 174 = Attest
+            if "Impfberatung" in current_schema:
+                if pdf_checkboxes.get('Einfügebereich176') == 'X' or pdf_checkboxes.get('Einfügebereich176') == '/Yes' or \
+                   pdf_checkboxes.get('Einfügebereich175') == 'X' or pdf_checkboxes.get('Einfügebereich175') == '/Yes' or \
+                   pdf_checkboxes.get('Einfügebereich174') == 'X' or pdf_checkboxes.get('Einfügebereich174') == '/Yes':
+                    extracted_data["Impfberatung"] = "X"
+                elif pdf_checkboxes.get('Einfügebereich177') == 'X' or pdf_checkboxes.get('Einfügebereich177') == '/Yes':
+                    extracted_data["Impfberatung"] = ""
+
+            # Sonderregel für Kita Name (100% zuverlässig aus den versteckten Formularfeldern)
+            if "ma.Name" in current_schema:
+                kita_name = pdf_checkboxes.get('KitaName') or pdf_checkboxes.get('Kita')
+                if kita_name:
+                    extracted_data["ma.Name"] = str(kita_name).strip()
+
+            # Sonderregel für Gemeinde: Immer 1:1 von ki.Wohnort kopieren
+            if "Gemeinde" in extracted_data or "Gemeinde" in current_schema:
+                extracted_data["Gemeinde"] = extracted_data.get("ki.Wohnort", None)
             
             # Datumsangaben und Uhrzeiten vereinheitlichen
             for k, v in extracted_data.items():
@@ -332,8 +422,8 @@ def process_pdfs(config: Dict[str, str], current_schema: Dict[str, str]):
             # funktioniert ein relativer Pfad wie "Abgeschlossen\dateiname.pdf" auf jedem PC.
             relative_path = os.path.relpath(final_dest_path, start=os.path.dirname(excel))
             
-            # Dateiname als klickbaren Hyperlink in die Excel-Tabelle eintragen (Excel XML verlangt intern immer ein Komma, auch bei deutschem Excel!)
-            extracted_data["Quelldatei"] = f'=HYPERLINK("{relative_path}", "{filename}")'
+            # Dateiname als relativer Pfad speichern, der Hyperlink wird in save_to_excel gesetzt
+            extracted_data["Quelldatei"] = relative_path
             
             # 4. In Excel speichern
             try:
